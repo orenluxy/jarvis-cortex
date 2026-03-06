@@ -3,15 +3,36 @@
 
 Jarvis Cortex is a lightweight, local-first memory system designed to give AI agents "infinite" recall capabilities without heavy infrastructure.
 
-It works by ingesting an agent's markdown memory files (logs, notes, profiles), converting them into vector embeddings (via Google Gemini), and storing them in a local SQLite database for fast, semantic retrieval.
+## 🧠 How It Works (The Core Logic)
+
+Unlike traditional keyword search (grep) or heavy vector databases (Pinecone/Milvus), Jarvis Cortex uses a **Hybrid Local Approach**:
+
+### 1. Ingestion (Learning) 📥
+- **Scanning:** The system scans your agent's memory files (markdown logs, daily journals).
+- **Chunking:** It breaks long text into smaller, overlapping "chunks" (default: 1500 chars).
+- **Embedding:** Each chunk is sent to an Embedding Model (e.g., Gemini `text-embedding-004`) which converts the text into a **Vector** (a list of 768 floating-point numbers representing the *meaning*).
+- **Storage:** The text + vector are saved locally in a standard `SQLite` file (`cortex.db`). No external database servers required.
+
+### 2. Retrieval (Remembering) 🔍
+- **Query:** You ask a question (e.g., *"What did we decide about the API?"*).
+- **Vector Search:** The system converts your question into a vector.
+- **Math Magic:** It calculates the **Cosine Similarity** between your question's vector and every chunk in the database.
+- **Result:** It returns the top chunks that are *semantically close* to your question, even if they don't share the exact same words.
+
+### 3. Architecture 🏗️
+- **Zero Infrastructure:** Just a Python script and a file.
+- **Privacy First:** Your raw text stays on your machine. Only ephemeral vectors are computed via API.
+- **Portable:** The entire brain is just one file (`cortex.db`). You can copy it to another server, and the agent instantly "knows" everything.
+
+---
 
 ## ✨ Features
 
 - **Lightweight:** Zero heavy dependencies (no Docker, no Postgres). Just Python + SQLite.
 - **Portable:** Easy to copy/paste between agents. "Brain in a Box" architecture.
-- **Semantic Search:** Finds information by meaning, not just keywords (e.g., query "What does the boss like?" matches "Oren prefers spicy food").
-- **Cost-Effective:** Uses Google Gemini Embeddings (often free/cheap compared to alternatives).
-- **Privacy-First:** Your data stays local in `cortex.db` (only embeddings are sent to API).
+- **Semantic Search:** Finds information by meaning, not just keywords.
+- **Cost-Effective:** Uses Google Gemini Embeddings (often free/cheap).
+- **Privacy-First:** Your data stays local in `cortex.db`.
 
 ## 🚀 Installation
 
