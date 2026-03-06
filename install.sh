@@ -3,7 +3,7 @@
 # Ensure we are in the skill directory
 cd "$(dirname "$0")" || exit 1
 
-echo "🧠 Installing Jarvis Cortex dependencies..."
+echo "🧠 Installing Jarvis Cortex dependencies (Lightweight)..."
 
 # Check for pip
 if ! command -v pip3 &> /dev/null; then
@@ -11,25 +11,25 @@ if ! command -v pip3 &> /dev/null; then
     exit 1
 fi
 
-# Install python dependencies with --break-system-packages for managed environments
-# This is safe for single-purpose skills
-pip3 install google-generativeai numpy --user --break-system-packages
+# Install ONLY requests (lightweight) and numpy (math)
+# Removed google-generativeai to prevent OOM
+pip3 install requests numpy --user --break-system-packages
 
 # Create assets directory if not exists
 mkdir -p ../assets
 
-echo "✅ Dependencies installed."
+echo "✅ Dependencies installed (Lightweight Mode)."
 
 # Ask user if they want to run ingest now
 echo ""
 echo "❓ Do you want to run the initial memory ingestion now?"
-echo "   (This requires GOOGLE_API_KEY to be set in your environment)"
+echo "   (This requires GOOGLE_API_KEY or OPENAI_API_KEY)"
 read -p "   Run ingest? [y/N] " -n 1 -r
 echo ""
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    if [ -z "$GOOGLE_API_KEY" ]; then
-        echo "❌ GOOGLE_API_KEY is not set. Please set it and run ./scripts/cortex.py ingest manually."
+    if [ -z "$GOOGLE_API_KEY" ] && [ -z "$OPENAI_API_KEY" ]; then
+        echo "❌ No API Key found. Set GOOGLE_API_KEY or OPENAI_API_KEY."
     else
         echo "🚀 Starting ingestion..."
         ./scripts/cortex.py ingest
