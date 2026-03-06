@@ -10,7 +10,7 @@ Unlike traditional keyword search (grep) or heavy vector databases (Pinecone/Mil
 ### 1. Ingestion (Learning) 📥
 - **Scanning:** The system scans your agent's memory files (markdown logs, daily journals).
 - **Chunking:** It breaks long text into smaller, overlapping "chunks" (default: 1500 chars).
-- **Embedding:** Each chunk is sent to an Embedding Model (e.g., Gemini `text-embedding-004`) which converts the text into a **Vector** (a list of 768 floating-point numbers representing the *meaning*).
+- **Embedding:** Each chunk is sent to an Embedding Model (Google Gemini `text-embedding-004`) which converts the text into a **Vector** (a list of 768 floating-point numbers representing the *meaning*).
 - **Storage:** The text + vector are saved locally in a standard `SQLite` file (`cortex.db`). No external database servers required.
 
 ### 2. Retrieval (Remembering) 🔍
@@ -23,6 +23,15 @@ Unlike traditional keyword search (grep) or heavy vector databases (Pinecone/Mil
 - **Zero Infrastructure:** Just a Python script and a file.
 - **Privacy First:** Your raw text stays on your machine. Only ephemeral vectors are computed via API.
 - **Portable:** The entire brain is just one file (`cortex.db`). You can copy it to another server, and the agent instantly "knows" everything.
+
+---
+
+## 🔑 Why do I need a Google/Gemini API Key?
+
+Even if your agent uses **Claude (Anthropic)** or **GPT (OpenAI)** for chatting, you still need an **Embedding Model** for memory.
+- Claude models (Sonnet/Opus) are for *text generation*, they do not provide *vector embeddings*.
+- Therefore, we use **Google Gemini** as the embedding provider because it is high-quality, fast, and has a very generous free tier.
+- Don't worry: Your main chat remains with Claude. Only the memory indexing uses Gemini.
 
 ---
 
